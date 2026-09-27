@@ -1,0 +1,32 @@
+# ECHOBOUND host agent as a privileged DaemonSet (required for the real eBPF
+# collector path). Runs one agent per node; falls back to the proc-based
+# collector automatically if eBPF preconditions are not met on a node.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: echobound-agent
+spec:
+  selector:
+    matchLabels: { app: echobound-agent }
+  template:
+    metadata:
+      labels: { app: echobound-agent }
+    spec:
+      hostPID: true
+      hostNetwork: true
+      containers:
+        - name: echobound-agent
+          image: echobound/agent:latest
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - { name: sys-kernel-debug, mountPath: /sys/kernel/debug }
+            - { name: proc, mountPath: /host/proc, readOnly: true }
+          env:
+            - name: ECHOBOUND_API_HOST
+              value: "echobound-api"
+      volumes:
+        - name: sys-kernel-debug
+          hostPath: { path: /sys/kernel/debug }
+        - name: proc
+          hostPath: { path: /proc }

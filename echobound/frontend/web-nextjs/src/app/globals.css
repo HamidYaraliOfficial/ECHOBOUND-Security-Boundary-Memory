@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root, [data-theme="win11-light"] {
+  --bg: #f3f3f3; --bg-card: #ffffffcc; --accent: #0067c0; --border: #e2e2e2; --text: #1b1b1b;
+}
+[data-theme="win11-dark"] { --bg: #1f1f1f; --bg-card: #2b2b2bdd; --accent: #60cdff; --border: #3a3a3a; --text: #f2f2f2; }
+[data-theme="amoled"] { --bg: #000; --bg-card: #0c0c0cdd; --accent: #33e0ff; --border: #1c1c1c; --text: #eaeaea; }
+[data-theme="crimson"] { --bg: #170707; --bg-card: #2a0d0ddd; --accent: #ff4d4d; --border: #3a1414; --text: #f7e9e9; }
+[data-theme="azure"] { --bg: #06101f; --bg-card: #0e1f3add; --accent: #3aa0ff; --border: #16294a; --text: #eaf3ff; }
+
+body { background: var(--bg); color: var(--text); }
+html[lang="fa"] body { font-family: "Vazirmatn", "Segoe UI", sans-serif; }
+html[lang="zh"] body { font-family: "Noto Sans SC", "Segoe UI", sans-serif; }

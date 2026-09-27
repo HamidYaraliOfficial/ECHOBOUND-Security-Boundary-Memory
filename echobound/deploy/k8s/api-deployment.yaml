@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echobound-api
+  labels: { app: echobound-api }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: echobound-api }
+  template:
+    metadata:
+      labels: { app: echobound-api }
+    spec:
+      containers:
+        - name: echobound-api
+          image: echobound/api:latest
+          ports: [{ containerPort: 8088 }]
+          env:
+            - name: ECHOBOUND_ENV
+              value: production
+            - name: ECHOBOUND_JWT_SECRET
+              valueFrom:
+                secretKeyRef: { name: echobound-secrets, key: jwt-secret }
+          readinessProbe:
+            httpGet: { path: /api/v1/health, port: 8088 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /api/v1/health, port: 8088 }
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests: { cpu: "250m", memory: "256Mi" }
+            limits: { cpu: "1", memory: "1Gi" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echobound-api
+spec:
+  selector: { app: echobound-api }
+  ports:
+    - port: 80
+      targetPort: 8088
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: echobound-api-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: echobound-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } }

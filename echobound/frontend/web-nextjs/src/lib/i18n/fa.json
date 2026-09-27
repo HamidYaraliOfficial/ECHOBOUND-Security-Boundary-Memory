@@ -1,0 +1,14 @@
+{
+  "dir": "rtl",
+  "productName": "اکوباند",
+  "tagline": "حافظه مرز امنیتی",
+  "overview": "نمای کلی",
+  "operatingHours": "ساعات کاری",
+  "open": "باز",
+  "closed": "بسته",
+  "nextChange": "تغییر بعدی",
+  "timezone": "منطقه زمانی",
+  "startTime": "زمان شروع",
+  "endTime": "زمان پایان",
+  "save": "ذخیره"
+}

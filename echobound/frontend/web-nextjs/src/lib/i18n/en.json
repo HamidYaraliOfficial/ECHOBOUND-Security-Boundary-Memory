@@ -1,0 +1,14 @@
+{
+  "dir": "ltr",
+  "productName": "ECHOBOUND",
+  "tagline": "Security Boundary Memory",
+  "overview": "Overview",
+  "operatingHours": "Operating Hours",
+  "open": "OPEN",
+  "closed": "CLOSED",
+  "nextChange": "Next change",
+  "timezone": "Timezone",
+  "startTime": "Start time",
+  "endTime": "End time",
+  "save": "Save"
+}

@@ -1,0 +1,34 @@
+# ECHOBOUND — reference deployment.
+# `docker compose up --build` starts the API (SQLite-backed reference storage)
+# and the static Security Command Center dashboard.
+#
+# For production, point ECHOBOUND_POSTGRES_DSN / ECHOBOUND_REDIS_URL /
+# ECHOBOUND_KAFKA_BOOTSTRAP at real services — the storage/cache/streaming
+# layers in the Python package are written as provider-independent
+# abstractions specifically so this swap does not require code changes to
+# the engines themselves.
+version: "3.9"
+
+services:
+  echobound-api:
+    build: ./backend
+    ports:
+      - "8088:8088"
+    environment:
+      ECHOBOUND_ENV: production
+      ECHOBOUND_DB: /data/echobound.db
+      ECHOBOUND_JWT_SECRET: change-me-in-production
+    volumes:
+      - echobound-data:/data
+    restart: unless-stopped
+
+  echobound-dashboard:
+    build: ./frontend/dashboard
+    ports:
+      - "8089:80"
+    depends_on:
+      - echobound-api
+    restart: unless-stopped
+
+volumes:
+  echobound-data:

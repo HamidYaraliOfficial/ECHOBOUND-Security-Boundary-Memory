@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-theme="win11-light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ECHOBOUND — Security Boundary Memory</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">EB</div>
+      <div>
+        <div class="brand-title">ECHOBOUND</div>
+        <div class="brand-sub" data-i18n="productTagline">Security Boundary Memory</div>
+      </div>
+    </div>
+
+    <div class="nav-group-label" data-i18n="nav.section_main">Command Center</div>
+    <div class="nav-item active" data-view="overview"><span class="nav-icon">🛰</span><span data-i18n="nav.overview">Overview</span></div>
+    <div class="nav-item" data-view="observatory"><span class="nav-icon">🔭</span><span data-i18n="nav.observatory">Boundary Observatory</span></div>
+    <div class="nav-item" data-view="explorer"><span class="nav-icon">🧭</span><span data-i18n="nav.explorer">Entity Explorer</span></div>
+    <div class="nav-item" data-view="graph"><span class="nav-icon">🕸</span><span data-i18n="nav.graph">Temporal Graph</span></div>
+    <div class="nav-item" data-view="drift"><span class="nav-icon">📈</span><span data-i18n="nav.driftCenter">Drift Center</span></div>
+    <div class="nav-item" data-view="incidents"><span class="nav-icon">🚨</span><span data-i18n="nav.incidentCenter">Incident Center</span></div>
+    <div class="nav-item" data-view="investigation"><span class="nav-icon">🔍</span><span data-i18n="nav.investigation">Investigation Workspace</span></div>
+    <div class="nav-item" data-view="baseline"><span class="nav-icon">📐</span><span data-i18n="nav.baselineStudio">Baseline Studio</span></div>
+    <div class="nav-item" data-view="policy"><span class="nav-icon">📜</span><span data-i18n="nav.policyStudio">Policy Studio</span></div>
+    <div class="nav-item" data-view="replay"><span class="nav-icon">⏪</span><span data-i18n="nav.replayLab">Replay Lab</span></div>
+    <div class="nav-item" data-view="agents"><span class="nav-icon">🛡</span><span data-i18n="nav.agents">Agent Management</span></div>
+    <div class="nav-item" data-view="blindspots"><span class="nav-icon">🕳</span><span data-i18n="nav.blindSpots">Blind Spot Map</span></div>
+    <div class="nav-item" data-view="reports"><span class="nav-icon">📄</span><span data-i18n="nav.reports">Reports</span></div>
+
+    <div class="nav-group-label" data-i18n="nav.section_system">System</div>
+    <div class="nav-item" data-view="admin"><span class="nav-icon">🖥</span><span data-i18n="nav.administration">Administration</span></div>
+    <div class="nav-item" data-view="settings"><span class="nav-icon">⚙</span><span data-i18n="nav.settings">Settings</span></div>
+  </aside>
+
+  <!-- =============================== MAIN =============================== -->
+  <div class="main">
+    <div class="topbar">
+      <div class="search-box">
+        <span>🔎</span>
+        <input id="nav-search-input" type="text" data-i18n-placeholder="searchPlaceholder" />
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="command-palette-btn" title="Command Palette (Ctrl+K)">⌘</button>
+        <span class="kbd">Ctrl+K</span>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ===================== OVERVIEW ===================== -->
+      <section class="view active" id="view-overview">
+        <h1 class="page-title" data-i18n="overview.title">Security Overview</h1>
+        <p class="page-sub" data-i18n="overview.sub">Live boundary memory health across your organization.</p>
+        <div class="grid grid-4">
+          <div class="card"><h3 data-i18n="overview.entities">Tracked Entities</h3><div class="metric" id="metric-entities">—</div></div>
+          <div class="card"><h3 data-i18n="overview.drifts">Drifts (24h)</h3><div class="metric" id="metric-drifts">—</div></div>
+          <div class="card"><h3 data-i18n="overview.incidents">Open Incidents</h3><div class="metric" id="metric-incidents">—</div></div>
+          <div class="card"><h3 data-i18n="overview.blindSpots">Blind Spots</h3><div class="metric" id="metric-blindspots">—</div></div>
+        </div>
+        <div class="split" style="margin-top:16px;">
+          <div class="card">
+            <h3 data-i18n="overview.recentDrifts">Recent Drift Events</h3>
+            <table><thead><tr><th data-i18n="common.entity">Entity</th><th>Type</th><th data-i18n="common.severity">Severity</th><th data-i18n="common.lastSeen">Detected</th></tr></thead>
+            <tbody id="recent-drifts-list"></tbody></table>
+          </div>
+          <div class="card">
+            <h3 data-i18n="overview.topDrifting">Top Drifting Entities</h3>
+            <div id="top-drift-entities"></div>
+          </div>
+        </div>
+        <div class="hgap" style="margin-top:16px;">
+          <button class="btn primary" onclick="loadOverview()" data-i18n="common.refresh">Refresh</button>
+          <button class="btn" onclick="seedSynthetic()">Seed demo data</button>
+        </div>
+      </section>
+
+      <!-- ===================== OBSERVATORY ===================== -->
+      <section class="view" id="view-observatory">
+        <h1 class="page-title" data-i18n="nav.observatory">Boundary Observatory</h1>
+        <p class="page-sub">Every tracked entity, live — click to inspect its boundary.</p>
+        <div class="pill-row" id="observatory-entities"></div>
+      </section>
+
+      <!-- ===================== ENTITY EXPLORER ===================== -->
+      <section class="view" id="view-explorer">
+        <h1 class="page-title" data-i18n="nav.explorer">Entity Explorer</h1>
+        <div class="hgap" style="margin-bottom:14px;">
+          <input class="text-control" id="entity-search" placeholder="Search by name…" style="min-width:260px;"/>
+          <select class="select-control" id="entity-type-filter">
+            <option value="">All types</option>
+            <option value="process">Process</option><option value="user">User</option>
+            <option value="service">Service</option><option value="container">Container</option>
+            <option value="host">Host</option><option value="database">Database</option>
+            <option value="network_endpoint">Network Endpoint</option><option value="identity">Identity</option>
+          </select>
+          <button class="btn primary" onclick="loadEntities()" data-i18n="common.refresh">Refresh</button>
+        </div>
+        <div class="card">
+          <table><thead><tr><th data-i18n="common.entity">Entity</th><th data-i18n="common.type">Type</th><th>Archetype</th><th data-i18n="common.lastSeen">Last Seen</th><th></th></tr></thead>
+          <tbody id="entities-table-body"></tbody></table>
+        </div>
+      </section>
+
+      <!-- ===================== GRAPH ===================== -->
+      <section class="view" id="view-graph">
+        <h1 class="page-title" data-i18n="nav.graph">Temporal Graph</h1>
+        <p class="page-sub">Relationship counts per entity (a full 2D/3D interactive graph ships in the React/Three.js frontend — see /frontend/web-nextjs).</p>
+        <div id="graph-canvas"></div>
+      </section>
+
+      <!-- ===================== DRIFT CENTER ===================== -->
+      <section class="view" id="view-drift">
+        <h1 class="page-title" data-i18n="drift.title">Drift Center</h1>
+        <p class="page-sub" data-i18n="drift.sub">Boundary Drift Engine findings across all entities.</p>
+        <div class="hgap" style="margin-bottom:14px;">
+          <input class="text-control" id="drift-run-entity-id" placeholder="entity id…" style="min-width:260px;"/>
+          <button class="btn primary" onclick="runDriftForEntity()" data-i18n="drift.runFor">Run drift detection</button>
+          <button class="btn" onclick="loadDrifts()" data-i18n="common.refresh">Refresh</button>
+        </div>
+        <div class="card">
+          <table><thead><tr><th data-i18n="common.entity">Entity</th><th>Type</th><th data-i18n="common.severity">Severity</th><th data-i18n="common.confidence">Confidence</th><th data-i18n="common.lastSeen">Detected</th><th>Feedback</th></tr></thead>
+          <tbody id="drift-table-body"></tbody></table>
+        </div>
+      </section>
+
+      <!-- ===================== INCIDENTS ===================== -->
+      <section class="view" id="view-incidents">
+        <h1 class="page-title" data-i18n="incidents.title">Incident Center</h1>
+        <p class="page-sub" data-i18n="incidents.sub">Compound Boundary Incidents correlated across entities.</p>
+        <div class="hgap" style="margin-bottom:14px;">
+          <button class="btn primary" onclick="correlateIncidents()" data-i18n="incidents.correlate">Correlate recent drifts</button>
+          <button class="btn" onclick="loadIncidents()" data-i18n="common.refresh">Refresh</button>
+        </div>
+        <div class="split">
+          <div class="card">
+            <table><thead><tr><th>Title</th><th>Entities</th><th data-i18n="common.severity">Severity</th><th data-i18n="common.state">State</th><th>Opened</th></tr></thead>
+            <tbody id="incidents-table-body"></tbody></table>
+          </div>
+          <div class="card">
+            <h3 data-i18n="incidents.timeline">First Cause Timeline</h3>
+            <div class="timeline" id="incident-timeline-box"><div class="empty-state">Select an incident</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== INVESTIGATION ===================== -->
+      <section class="view" id="view-investigation">
+        <h1 class="page-title" data-i18n="investigation.title">Investigation Workspace</h1>
+        <p class="page-sub" data-i18n="investigation.sub">Boundary Inspector, Local AI Investigator and evidence trail.</p>
+        <div class="split">
+          <div class="card">
+            <div class="form-row"><label>Entity ID</label>
+              <input class="text-control" id="investigate-entity-id" placeholder="proc_..., svc_..., user_..." /></div>
+            <button class="btn primary" onclick="runInspectBoundary()" data-i18n="investigation.inspect">Inspect Boundary</button>
+            <h3 style="margin-top:16px;" data-i18n="investigation.hypotheses">Generated Hypotheses</h3>
+            <ul id="investigate-hypotheses"></ul>
+            <h3>Boundary</h3>
+            <pre id="investigate-boundary-output" style="max-height:260px; overflow:auto; font-size:11.5px;"></pre>
+          </div>
+          <div class="card">
+            <div class="form-row"><label>Drift ID</label>
+              <input class="text-control" id="investigate-drift-id" placeholder="drift_..." /></div>
+            <button class="btn primary" onclick="explainDrift()" data-i18n="investigation.askAI">Explain with Local AI</button>
+            <pre id="investigate-ai-output" style="max-height:400px; overflow:auto; font-size:11.5px; margin-top:12px;"></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== BASELINE STUDIO ===================== -->
+      <section class="view" id="view-baseline">
+        <h1 class="page-title" data-i18n="baseline.title">Baseline Studio</h1>
+        <p class="page-sub" data-i18n="baseline.sub">Context-aware, versioned Boundary Baselines.</p>
+        <div class="card">
+          <div class="hgap">
+            <input class="text-control" id="baseline-entity-id" placeholder="entity id…" />
+            <input class="text-control" id="baseline-context" placeholder='context json e.g. {"env":"production"}' style="min-width:280px;" />
+            <button class="btn primary" onclick="buildBaseline()" data-i18n="baseline.build">Build baseline</button>
+            <button class="btn" onclick="loadBaselineHistory()" data-i18n="baseline.history">Version history</button>
+          </div>
+          <table style="margin-top:14px;"><thead><tr><th>ID</th><th>Context</th><th data-i18n="common.state">State</th><th>Created</th></tr></thead>
+          <tbody id="baseline-history-body"></tbody></table>
+        </div>
+      </section>
+
+      <!-- ===================== POLICY STUDIO ===================== -->
+      <section class="view" id="view-policy">
+        <h1 class="page-title" data-i18n="policy.title">Policy Studio</h1>
+        <p class="page-sub" data-i18n="policy.sub">Expected Boundary Contracts and the Policy Simulator.</p>
+        <div class="split">
+          <div class="card">
+            <h3>Active Policies</h3>
+            <table><thead><tr><th>ID</th><th>Selector</th><th>Change Policy</th></tr></thead>
+            <tbody id="policy-table-body"></tbody></table>
+            <button class="btn" style="margin-top:10px;" onclick="loadPolicies()" data-i18n="common.refresh">Refresh</button>
+          </div>
+          <div class="card">
+            <h3 data-i18n="policy.simulate">Simulate candidate relationship</h3>
+            <div class="form-row"><label>Entity ID</label><input class="text-control" id="sim-entity-id" /></div>
+            <div class="form-row"><label>Relation</label><input class="text-control" id="sim-relation" placeholder="connected_to" /></div>
+            <div class="form-row"><label>Target ID</label><input class="text-control" id="sim-target-id" /></div>
+            <button class="btn primary" onclick="simulatePolicy()">Run simulation</button>
+            <div style="margin-top:12px;" id="sim-result"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== REPLAY / BENCHMARK LAB ===================== -->
+      <section class="view" id="view-replay">
+        <h1 class="page-title" data-i18n="nav.replayLab">Replay Lab</h1>
+        <p class="page-sub">Run the Boundary Detection Benchmark Lab against a fresh Synthetic Security World.</p>
+        <div class="hgap"><button class="btn primary" onclick="runBenchmark()">Run benchmark</button></div>
+        <pre id="replay-output" style="margin-top:14px; max-height:400px; overflow:auto;"></pre>
+      </section>
+
+      <!-- ===================== AGENTS ===================== -->
+      <section class="view" id="view-agents">
+        <h1 class="page-title" data-i18n="agents.title">Agent Management</h1>
+        <p class="page-sub" data-i18n="agents.sub">eBPF / proc-fallback collector fleet health.</p>
+        <div class="card">
+          <table><thead><tr><th>Host</th><th data-i18n="common.state">Status</th><th>Events/sec</th><th>Dropped</th><th>Last Heartbeat</th></tr></thead>
+          <tbody id="agents-table-body"></tbody></table>
+          <button class="btn" style="margin-top:10px;" onclick="loadAgents()" data-i18n="common.refresh">Refresh</button>
+        </div>
+      </section>
+
+      <!-- ===================== BLIND SPOTS ===================== -->
+      <section class="view" id="view-blindspots">
+        <h1 class="page-title" data-i18n="blindspots.title">Blind Spot Map</h1>
+        <p class="page-sub" data-i18n="blindspots.sub">Entities and hosts with insufficient telemetry visibility.</p>
+        <div class="card">
+          <table><thead><tr><th>Item</th><th>Reason</th></tr></thead><tbody id="blindspots-table-body"></tbody></table>
+          <button class="btn" style="margin-top:10px;" onclick="loadBlindSpots()" data-i18n="common.refresh">Refresh</button>
+        </div>
+      </section>
+
+      <!-- ===================== REPORTS ===================== -->
+      <section class="view" id="view-reports">
+        <h1 class="page-title" data-i18n="reports.title">Reports</h1>
+        <p class="page-sub" data-i18n="reports.sub">Boundary Evolution, Drift, and Incident summaries.</p>
+        <button class="btn primary" onclick="generateOrgReport()" data-i18n="reports.organization">Organization Report</button>
+        <pre id="report-output" style="margin-top:14px; max-height:500px; overflow:auto;"></pre>
+      </section>
+
+      <!-- ===================== ADMINISTRATION ===================== -->
+      <section class="view" id="view-admin">
+        <h1 class="page-title" data-i18n="admin.title">Administration</h1>
+        <p class="page-sub" data-i18n="admin.sub">Tenants, roles and platform self-health.</p>
+        <div class="card">
+          <h3 data-i18n="admin.platformHealth">Platform Boundary Guard</h3>
+          <pre id="platform-health-output"></pre>
+        </div>
+      </section>
+
+      <!-- ===================== SETTINGS ===================== -->
+      <section class="view" id="view-settings">
+        <h1 class="page-title" data-i18n="settings.title">Settings</h1>
+        <p class="page-sub" data-i18n="settings.sub">Configure ECHOBOUND for your organization.</p>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <h3 data-i18n="settings.operatingHours">Operating Hours</h3>
+            <p class="small-muted" data-i18n="settings.operatingHoursDesc">Tell ECHOBOUND when your organization normally operates.</p>
+
+            <div class="form-row"><label data-i18n="settings.timezone">Timezone</label>
+              <input class="text-control" id="oh-timezone" value="UTC" placeholder="e.g. Asia/Baku, Europe/London, UTC" /></div>
+
+            <div class="hgap">
+              <div class="form-row" style="flex:1;"><label data-i18n="settings.startTime">Start time</label>
+                <input class="text-control" id="oh-start" type="time" value="09:00" /></div>
+              <div class="form-row" style="flex:1;"><label data-i18n="settings.endTime">End time</label>
+                <input class="text-control" id="oh-end" type="time" value="18:00" /></div>
+            </div>
+
+            <div class="form-row"><label data-i18n="settings.applyToDays">Apply to days</label>
+              <div class="pill-row" id="oh-days-box"></div></div>
+
+            <button class="btn primary" onclick="quickSetupOperatingHours()" data-i18n="settings.quickSetup">Quick setup</button>
+          </div>
+
+          <div class="card">
+            <h3 data-i18n="settings.currentStatus">Current Status</h3>
+            <div id="oh-status-box"><div class="empty-state">…</div></div>
+            <button class="btn" style="margin-top:10px;" onclick="refreshOperatingHoursStatus()" data-i18n="common.refresh">Refresh</button>
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="margin-top:16px;">
+          <div class="card">
+            <h3 data-i18n="settings.theme">Theme</h3>
+            <div class="pill-row">
+              <div class="pill theme-pill" data-theme="win11-light">Windows 11 Light</div>
+              <div class="pill theme-pill" data-theme="win11-dark">Windows 11 Dark</div>
+              <div class="pill theme-pill" data-theme="amoled">AMOLED</div>
+              <div class="pill theme-pill" data-theme="crimson">Crimson Red</div>
+              <div class="pill theme-pill" data-theme="azure">Azure Blue</div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 data-i18n="settings.language">Language</h3>
+            <div class="pill-row">
+              <div class="pill lang-pill" data-lang="en">English</div>
+              <div class="pill lang-pill" data-lang="fa">فارسی</div>
+              <div class="pill lang-pill" data-lang="zh">中文</div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 data-i18n="settings.apiConnection">API Connection</h3>
+            <input class="text-control" id="api-base-input" style="width:100%;" placeholder="http://localhost:8088" />
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================ COMMAND PALETTE ============================ -->
+<div class="command-palette-overlay" id="command-palette-overlay">
+  <div class="command-palette">
+    <input id="command-input" placeholder="Type a command…" />
+    <div class="command-results" id="command-results"></div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toast-stack"></div>
+
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

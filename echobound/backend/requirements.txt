@@ -1,0 +1,10 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+PyJWT==2.9.0
+typer==0.12.5
+psutil==6.0.0
+python-multipart==0.0.9
+websockets==13.0
+# Optional, Linux-only, only needed for the real eBPF collector path:
+# bcc (install via your distro package manager, e.g. `apt install bpfcc-tools python3-bpfcc`)

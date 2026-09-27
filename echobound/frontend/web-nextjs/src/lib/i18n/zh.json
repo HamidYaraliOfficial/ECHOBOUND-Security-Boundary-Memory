@@ -1,0 +1,14 @@
+{
+  "dir": "ltr",
+  "productName": "ECHOBOUND",
+  "tagline": "安全边界记忆",
+  "overview": "总览",
+  "operatingHours": "营业时间",
+  "open": "营业中",
+  "closed": "已关闭",
+  "nextChange": "下次变更",
+  "timezone": "时区",
+  "startTime": "开始时间",
+  "endTime": "结束时间",
+  "save": "保存"
+}
